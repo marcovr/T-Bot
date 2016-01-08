@@ -105,46 +105,6 @@ function on_msg_receive(msg)
 	end
 end
 
-function parseMsg(message)
-	local subStrings = {} -- Alle mit Leerzeichen getrennten Teile des Befehls
-	for subStr in string.gmatch(string.sub(msg.text,2),"%S+") do table.insert(subStrings, subStr) end -- Chatnachricht zerteilen
-	local cmd = string.lower(subStrings[1]) -- Befehl in Variable speichern
-	table.remove(subStrings,1) -- Erstes Element ist der Befehl, deshalb erstes Element löschen um Argumente zu bekommen
-	
-	local args = {}
-	
-	local quoteClosed = true
-	local skipTo = 1
-	
-	for k, v in pairs(subStrings) do -- Quotes parsen
-		if(string.sub(v, -1) == "\"" and string.sub(v, 1, 1) == "\"") then -- Wenn Anfangsquote auch Endquote ist
-			table.insert(args, string.sub(v, 2, -2))
-		elseif(string.sub(v, 1, 1) == "\"") then -- Wenn Anfangsquote gefunden wurde
-			quoteClosed = false
-			for i=k+1,#subStrings do -- Durch alle restlichen Argumente gehen und Endquote suchen
-				if(string.sub(subStrings[i], -1) == "\"") then -- Wenn Endquote gefunden wurde
-					quoteClosed = true -- Quote wurde geschlossen
-					local quoteArg = ""
-					quoteArg = quoteArg..string.sub(v, 2) -- Argument mit Anfangsquote zu quoteArg hinzufügen
-					for j=k+1,i-1 do -- Von Anfangs+1 bis Endquote-1 durchgehen
-						quoteArg = quoteArg.." "..subStrings[j] -- Argumente zwischen Anfangs und Endquote zu quoteArg hinzufügen
-					end
-					quoteArg = quoteArg.." "..string.sub(subStrings[i], 1, -2) -- Argument mit Endquote zu quoteArg hinzufügen
-					skipTo = i+1 -- Bis nach die Quote skippen
-					table.insert(args, quoteArg) -- quoteArg in neues Argument-Table hinzufügen
-					break
-				end
-			end
-		else
-			if(k >= skipTo) then -- Erst wenn loop nach der letzten Quote ist wieder einzelne Elemente inserten
-				table.insert(args, v)
-			end
-		end
-	end
-	
-	return cmd, args	-- cmd: commandname , options: array mit options , args: array mit argumenten
-end
-
 function on_user_update(user, what_changed)
 	hook.Call("tg_UserUpdate", user, what_changed)
 end
@@ -355,6 +315,10 @@ addCommand("lua", function(msg, args)
 						output = "[Empty]"
 					elseif output == " " then
 						output = "[Space]"
+					elseif output == true then
+						output = "[TRUE]"
+					elseif output == false then
+						output = "[FALSE]"
 					end
 					send_text(msg.to.print_name, "["..botName.."] "..output)
 				else
@@ -405,24 +369,6 @@ addCommand("ls", function(msg, args)
     end
     send_text(msg.to.print_name, "["..botName.."] Available commands:\n"..cmds)
 end)
-
---[[
-addCommand("getuser", function(msg, args)
-	if(msg.to.print_name == "Tiger_Tiger") then -- Befehl auf Tiger_Tiger Gruppe begrenzen
-		if(isAdmin(msg)) then
-			if(#args > 0) then
-				os.execute("php -f /var/www/maclog/php/telegram/GetUserData.php "..args[1])
-			else
-				send_text("Tiger_Tiger", "["..botName.."] Usage: getuser <user>")
-			end
-		else
-			send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
-		end
-	else
-		send_text(msg.to.print_name, "["..botName.."] Unknown command")
-	end
-end)
-]]--
 
 addCommand("update", function(msg, args)
 	if(isAdmin(msg)) then
