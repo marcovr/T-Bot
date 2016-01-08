@@ -94,8 +94,6 @@ addCommand("topusers", function(msg,args)
 	if(#args < 2) then
 		local cb_extra = {}
 		cb_extra.target = msg.to.print_name
-		cb_extra.step = 1000
-		topusers = {}
 		
 		if(#args == 0) then
 			cb_extra.peer = msg.to.print_name
@@ -111,10 +109,12 @@ end)
 
 function topusers_start(extra, success, result)
 	local msgcount = result
+	extra.step = 1000
 	extra.offset = msgcount-extra.step
+	topusers = {} -- reset statistics
 	
 	-- calculate approximate waiting time and start
-	send_text(msg.to.print_name, "["..botName.."] Generating statistics - estimated waiting time: " .. math.floor(msgcount/extra.step)*10 .. " seconds")
+	send_text(extra.target, "["..botName.."] Generating statistics - estimated waiting time: " .. math.floor(msgcount/extra.step)*10 .. " seconds")
 	get_history(extra.peer, extra.offset, extra.step, topusers_cb, extra)
 end
 
