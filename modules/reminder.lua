@@ -16,7 +16,7 @@ addCommand("remind", function(msg, args)
 									min=tonumber(string.sub(args[2],4,5))}
 		
 		if(timestamp ~= nil and timestamp > os.time()) then
-			local con, err = env:connect("tbot","root","iamrobot","localhost")
+			local con, err = env:connect("tbot",config.getValue("sqluser"),config.getValue("sqlpw"),"localhost")
 			if(con == nil) then
 				send_text(msg.to.print_name, "["..botName.."] "..err)
 				return false

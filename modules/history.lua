@@ -124,6 +124,8 @@ addCommand("topusers", function(msg,args)
 		local msgcount = 20000 --WIP
 		cb_extra.offset = msgcount-cb_extra.step
 		
+		
+		send_text(msg.to.print_name, "["..botName.."] Generating statistics - estimated waiting time: " .. math.floor(msgcount/cb_extra.step)*10 .. " seconds")
 		get_history(cb_extra.peer, cb_extra.offset, cb_extra.step, topusers_cb, cb_extra)
 	else
 		send_text(msg.to.print_name, "["..botName.."] Usage: topusers [peer]")

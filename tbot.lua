@@ -1,15 +1,14 @@
 ﻿-- Globale Variablen definieren
 chatCommands = {} -- chatCommands[x].command = string des commands / chatCommands[x].func = function des commands
-hook = {}	-- Table mit hook functions
 mainGroup = "T-Bot_Dev_Chat"
 botName = "T-Bot"
 TGNumber = "Telegram"
 defaultFilePath = "/home/pi/telegram/lua/tbot.lua"
+libPath = "/home/pi/telegram/lua/libs/"
 modulePath = "/home/pi/telegram/lua/modules/"
 cage = 1
 
 local admins = {"David_Enderlin", "Johann_Chervet", "Marco_von_Raumer", "T-Bot", "Marcel_Schmutz"}
-local hookTable = {} -- Table mit allen hooks
 
 ------ Event handling ------
 function on_binlog_replay_end()
@@ -165,54 +164,6 @@ function booleanvalue(bool)
 	else
 		return "FALSE"
 	end
-end
-
-function hook.Add(eventName, identifier, func)
-	if(hookTable[eventName] == nil) then -- Wenn Event noch nicht im Table ist, adden
-		hookTable[eventName] = {}
-	end
-	
-	for k, v in pairs(hookTable[eventName]) do -- Wenn es schon einen Hook mit gleicher id gibt
-		if(identifier == k) then
-			return false
-		end
-	end
-	
-	hookTable[eventName][identifier] = func
-	
-	return true
-end
-
-function hook.Remove(eventName, identifier)
-	if(hookTable[eventName] ~= nil) then
-		for k, v in pairs(hookTable[eventName]) do
-			if(identifier == k) then
-				hookTable[eventName][identifier] = nil
-				return true
-			end
-		end
-	end
-	
-	return false
-end
-
-function hook.Call(eventName, ...)
-	local args = {...}
-	
-	if(hookTable[eventName] == nil) then -- Wenn Event noch nicht im Table ist, adden
-		hookTable[eventName] = {}
-		return true
-	end
-	
-	for k, v in pairs(hookTable[eventName]) do
-		hookTable[eventName][k](...)
-	end
-	
-	return true
-end
-
-function hook.GetTable()
-	return hookTable
 end
 
 -- Function um neuen chat command zu machen
@@ -515,7 +466,7 @@ end)
 
 addCommand("reload", function(msg, args)
 	if(isAdmin(msg)) then
-		func, errorStr = loadfile(defaultFilePath) -- 
+		func, errorStr = loadfile(defaultFilePath)
 		if(func == nil) then
 			send_text(msg.to.print_name, "["..botName.."] An error occured while running the script:\n"..errorStr)
 		else
@@ -556,6 +507,21 @@ end
 postpone(changePicture, false, 60) -- changePicture in 60s ausführen
 ]]--
 
+------ Libraries Laden ------
+function loadLibs()
+	lsStr = os.capture("ls "..libPath)
+	local libs = {}
+	for file in string.gmatch(lsStr, "%a+.lua") do 
+		func, errorStr = loadfile(libPath..file) 
+		if(func == nil) then
+			send_text(mainGroup, "["..botName.."] Error loading library ("..file.."):\n"..errorStr)
+		else
+			func()
+			print("[LUA] Library ("..file..") loaded!")
+		end
+	end
+end
+
 ------ Module Laden ------
 function loadModules()
 	lsStr = os.capture("ls "..modulePath)
@@ -572,5 +538,7 @@ function loadModules()
 end
 
 -- Nachricht anzeigen dass Bot initialisiert wurde
+loadLibs()
 loadModules()
+config.load() -- Load the config file
 send_text(mainGroup, "["..botName.."] T-Bot initialized!")
