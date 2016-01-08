@@ -6,7 +6,6 @@ TGNumber = "Telegram"
 defaultFilePath = "/home/pi/telegram/lua/tbot.lua"
 libPath = "/home/pi/telegram/lua/libs/"
 modulePath = "/home/pi/telegram/lua/modules/"
-cage = 1
 
 local admins = {"David_Enderlin", "Johann_Chervet", "Marco_von_Raumer", "T-Bot", "Marcel_Schmutz"}
 
@@ -17,7 +16,6 @@ end
 
 function on_get_difference_end()
 	hook.Call("tg_GetDifferenceEnd")
-	--reminderCheck()
 end
 
 function on_our_id(our_id)
@@ -226,7 +224,7 @@ function no_sense(extra, success, result)
 end
 
 -- Table Serialization Shit
--- Braucht man um das Tables zu analysieren
+-- Braucht man um Tables zu analysieren
 local function exportstring( s )
   return string.format("%q", s)
 end
@@ -311,23 +309,6 @@ addCommand("ping", function(msg, args)
 	send_text(msg.to.print_name, "["..botName.."] Pong!")
 end)
 
---[[addCommand("luaf", function(msg, args)
-	if(isAdmin(msg)) then
-		if(#args > 0) then
-			func, errorStr = loadfile(string.sub(msg.text,7)) -- 
-			if(func == nil) then
-				send_text(msg.to.print_name, "["..botName.."] An error occured while running the script:\n"..errorStr)
-			else
-				func()
-			end
-		else
-			send_text(msg.to.print_name, "["..botName.."] Usage: luaf <filepath>")
-		end
-	else
-		send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
-	end
-end)]]--
-
 addCommand("lua", function(msg, args)
 	if(isAdmin(msg)) then
 		if(#args > 0) then
@@ -387,29 +368,6 @@ addCommand("lua", function(msg, args)
 		send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
 	end
 end)
-
---[[
-addCommand("luat", function(msg, args)
-	if(isAdmin(msg)) then
-		if(#args > 0) then
-			postpone(loadstring(args[2]), false, args[1]) -- Kein Error Handling!
-			]]--
-			--[[
-			func, errorStr = loadstring(args[2])
-			if(func == nil) then
-				send_text(msg.to.print_name, "["..botName.."] An error occured while running the script:\n"..errorStr)
-			else
-				func()
-			end]]--
-			--[[
-		else
-			send_text(msg.to.print_name, "["..botName.."] Usage: luat <timeout> \"code\"")
-		end
-	else
-		send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
-	end
-end)
-]]--
 
 addCommand("sh", function(msg, args)
 	if(isAdmin(msg)) then
@@ -514,22 +472,6 @@ addCommand("talk", function(msg, args)
 		send_text(msg.to.print_name, "["..botName.."] Usage: talk <msg>")
 	end
 end)
-
------- Postpone functions ------
---[[
-function changePicture() -- Jede Minute Cage Bild ändern
-	if(cage > 3) then
-		cage = 1
-	end
-	
-	set_profile_photo("/home/pi/cage"..tostring(cage)..".jpg", no_sense, false)
-	postpone(changePicture, false, 60) -- changePicture in 60s ausführen -> loop
-	
-	cage = cage + 1
-end
-
-postpone(changePicture, false, 60) -- changePicture in 60s ausführen
-]]--
 
 ------ Libraries Laden ------
 function loadLibs()
