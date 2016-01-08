@@ -2,7 +2,6 @@
 chatCommands = {} -- chatCommands[x].command = string des commands / chatCommands[x].func = function des commands
 mainGroup = "T-Bot_Dev_Chat"
 botName = "T-Bot"
-TGNumber = "Telegram"
 defaultFilePath = "/home/pi/telegram/lua/tbot.lua"
 libPath = "/home/pi/telegram/lua/libs/"
 modulePath = "/home/pi/telegram/lua/modules/"
@@ -94,7 +93,7 @@ function on_msg_receive(msg)
 		else
 			if toTbot then
 				mark_read(msg.to.print_name, no_sense, false) -- Nachricht gelesen
-				if msg.from.print_name == TGNumber then
+				if msg.from.print_name == "Telegram" then
 					send_text(mainGroup, "["..botName.."] "..msg.text)
 				else
 					--os.execute("php -f /var/www/maclog/php/telegram/chat.php "..msg.to.print_name.." "..msg.text)
