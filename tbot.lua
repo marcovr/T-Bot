@@ -468,6 +468,14 @@ addCommand("update", function(msg, args)
 	if(isAdmin(msg)) then
 		local text = os.capture("cd /home/pi/telegram/lua/ && git pull")
 		send_text(msg.to.print_name, "["..botName.."][Update] ".. text)
+		if (text ~= "Already up-to-date.") then
+			func, errorStr = loadfile(defaultFilePath)
+			if(func == nil) then
+				send_text(msg.to.print_name, "["..botName.."] An error occured while running the script:\n"..errorStr)
+			else
+				func()
+			end
+		end
 	else
 		send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
 	end
