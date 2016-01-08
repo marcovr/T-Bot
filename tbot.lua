@@ -474,7 +474,7 @@ addCommand("update", function(msg, args)
 			local beginPos, endPos, fromVersion, toVersion = string.find(text, "(%w+)%.%.(%w+)") 	-- Get version hashes
 			text = string.sub(text, endPos+15)														-- Remove version hashes from string
 			text = string.gsub(text, "([%+%-]+)%s", "%1\n")											-- Format file changes
-			send_text(msg.to.print_name, "["..botName.."][Update] <".. fromVersion .."> => <".. toVersion .. ">\n```"..text.."```")
+			send_text(msg.to.print_name, "["..botName.."][Update] <".. fromVersion .."> => <".. toVersion .. ">\n```"..text.."```") -- Display message
 			postpone(reload, false, 1) -- delay dass Nachrichten richtig ankommen
 		else
 			send_text(msg.to.print_name, "["..botName.."][Update] Already up-to-date.")
