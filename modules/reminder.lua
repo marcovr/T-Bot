@@ -97,33 +97,4 @@ function uploading(msg) -- Überprüft ob file seit letztem mal grösser geworde
 	end
 end
 
-function reminderCheck() --Reminder checken
-	local con, err = env:connect("tbot","root","iamrobot","localhost")
-	if(con == nil) then
-		send_text("T-Bot_Dev_Chat", "["..botName.."] "..err)
-		return false
-	end
-	
-	local result, err = con:execute("SELECT * FROM reminders")
-	if(result ~= nil) then
-		local temp = {}
-		while(result:fetch(temp, "a") ~= nil) do 
-			if(tonumber(temp.TIME) <= os.time()) then
-				if(temp.ATTACHMENT == "nil") then
-					send_text(temp.TARGET, "["..botName.."] Reminder:\n"..temp.MSG)
-					con:execute("DELETE FROM reminders WHERE ID="..temp.ID)
-				else
-				
-				end
-			end
-		end
-		result:close()
-	else
-		send_text(msg.to.print_name, "["..botName.."] "..err)
-	end
-
-	con:close()
-	postpone(reminderCheck, false, 60)
-end
-
-reminderCheck()
+-- function remindercheck wurde ausgelagert nach (/home/pi/remindercheck.lua) und wird mittels cronjob aufgerufen (da postpone unzuverlässig)
