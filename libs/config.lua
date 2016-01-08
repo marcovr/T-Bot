@@ -52,13 +52,7 @@ function config.save()
 end
 
 function config.setValue(key, value)
-	for k, v in pairs(configValues) do
-		if(k == key) then
-			v = value
-		end
-	end
-	
-	configValues[key] = value -- If the config value doesn't exist yet, create
+	configValues[key] = value -- Set value
 	
 	config.save()
 end
