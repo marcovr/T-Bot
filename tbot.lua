@@ -470,8 +470,11 @@ addCommand("update", function(msg, args)
 	if(isAdmin(msg)) then
 		os.capture("cd /home/pi/telegram/lua/ && git reset --hard")
 		local text = os.capture("cd /home/pi/telegram/lua/ && git pull")
-		send_text(msg.to.print_name, "["..botName.."][Update] ".. text)
 		if (text ~= "Already up-to-date.") then
+			local beginPos, endPos, fromVersion, toVersion = string.find(text, "(%w+)%.%.(%w+)") 	-- Get version hashes
+			text = string.sub(text, endPos+15)														-- Remove version hashes from string
+			text = string.gsub(text, "([%+%-]+)%s", "%1\n")											-- Format file changes
+			send_text(msg.to.print_name, "["..botName.."][Update] Updating from <".. fromVersion .."> to <".. toVersion .. ">\n"..text)
 			postpone(reload, false, 1) -- delay dass Nachrichten richtig ankommen
 		end
 	else
