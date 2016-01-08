@@ -149,7 +149,7 @@ function topusers_cb(extra, success, result)
 end
 
 function postpone_history_cb(extra, success, result)
-	get_history(extra.peer, extra.offset, extra.step, topusers_cb, extra)
+	print(get_history(extra.peer, extra.offset, extra.step, topusers_cb, extra))
 end
 
 -- Counts total number of messages in chat
