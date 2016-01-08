@@ -58,7 +58,7 @@ function config.setValue(key, value)
 		end
 	end
 	
-	configValues[key] = value -- If the config value doesn't exit yet, create
+	configValues[key] = value -- If the config value doesn't exist yet, create
 	
 	config.save()
 end
