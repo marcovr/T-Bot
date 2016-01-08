@@ -468,6 +468,7 @@ end)
 
 addCommand("update", function(msg, args)
 	if(isAdmin(msg)) then
+		os.capture("cd /home/pi/telegram/lua/ && git reset --hard")
 		local text = os.capture("cd /home/pi/telegram/lua/ && git pull")
 		send_text(msg.to.print_name, "["..botName.."][Update] ".. text)
 		if (text ~= "Already up-to-date.") then
