@@ -92,17 +92,19 @@ function on_msg_receive(msg)
 			if (not commandExist) then -- Wenn Befehl nicht existiert hat
 				send_text(msg.to.print_name, "["..botName.."] Unknown command")
 			end
+			mark_read(msg.to.print_name, no_sense, false)
 		else
 			if toTbot then
 				if msg.from.print_name == TGNumber then
 					send_text(mainGroup, "["..botName.."] "..msg.text)
-				--else
+				else
 					--os.execute("php -f /var/www/maclog/php/telegram/chat.php "..msg.to.print_name.." "..msg.text)
+					send_text(msg.to.print_name, "["..botName.."] Cleverbot API is no longer available")
 				end
+				mark_read(msg.to.print_name, no_sense, false)
 			end
 		end
 	end
-	mark_read(msg.to.print_name, no_sense, false)
 end
 
 function parseMsg(message)
