@@ -464,6 +464,15 @@ addCommand("getuser", function(msg, args)
 end)
 ]]--
 
+addCommand("update", function(msg, args)
+	if(isAdmin(msg)) then
+		local text = os.capture("cd /home/pi/telegram/lua/ && git pull")
+		send_text(msg.to.print_name, "["..botName.."][Update] ".. text)
+	else
+		send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
+	end
+end)
+
 addCommand("reload", function(msg, args)
 	if(isAdmin(msg)) then
 		func, errorStr = loadfile(defaultFilePath)
