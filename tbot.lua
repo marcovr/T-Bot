@@ -476,6 +476,8 @@ addCommand("update", function(msg, args)
 			text = string.gsub(text, "([%+%-]+)%s", "%1\n")											-- Format file changes
 			send_text(msg.to.print_name, "["..botName.."][Update] Updating from <".. fromVersion .."> to <".. toVersion .. ">\n"..text)
 			postpone(reload, false, 1) -- delay dass Nachrichten richtig ankommen
+		else
+			send_text(msg.to.print_name, "["..botName.."][Update] Already up-to-date.")
 		end
 	else
 		send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
