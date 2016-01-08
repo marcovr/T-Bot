@@ -75,11 +75,12 @@ function on_msg_receive(msg)
 			end
 
 			local commandExist = false
+			local command = string.lower(subStrings[1])
 			for k, v in pairs(chatCommands) do
-				if(chatCommands[k].command == string.lower(subStrings[1])) then
+				if(chatCommands[command] ~= nil) then
 					commandExist = true
-					if (quoteClosed or chatCommands[k].command == "lua" or chatCommands[k].command == "luas") then -- Lua Befehl soll quote Regelung ignorieren
-						chatCommands[k].func(msg, qArgs)
+					if (quoteClosed or command == "lua" or command == "luas") then -- Lua Befehl soll quote Regelung ignorieren
+						chatCommands[command](msg, qArgs)
 					else -- Wenn beim Quotes parsen ein Problem aufgetreten ist
 						send_text(msg.to.print_name, "["..botName.."] Error: Not every quote is closed!")
 					end
@@ -127,11 +128,7 @@ end
 
 -- Function um neuen chat command zu machen
 function addCommand(command, func)
-	local temp = {}
-	temp.command = command
-	temp.func = func
-	
-	table.insert(chatCommands, temp)
+	chatCommands[command] = func
 end
 
 -- Überprüft ob der absender der msg admin ist
@@ -361,9 +358,9 @@ end)
 
 addCommand("ls", function(msg, args)
 	local cmds = ""
-    for index,value in pairs(chatCommands) do
-        if value.command ~= "getuser" then
-            cmds = cmds..value.command.."\n"
+    for key, value in pairs(chatCommands) do
+        if key ~= "getuser" then
+            cmds = cmds..key.."\n"
         end
     end
     send_text(msg.to.print_name, "["..botName.."] Available commands:\n"..cmds)
