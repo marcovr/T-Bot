@@ -375,7 +375,7 @@ addCommand("update", function(msg, args)
 			text = string.sub(text, endPos+15)														-- Remove version hashes from string
 			text = string.gsub(text, "([%+%-]+)%s", "%1\n")											-- Format file changes
 			send_text(msg.to.print_name, "["..botName.."][Update] Updating from <".. fromVersion .."> to <".. toVersion .. ">\n"..text)
-			postpone(reload, false, 1) -- delay dass Nachrichten richtig ankommen
+			postpone(chatCommands["reload"], false, 1) -- delay dass Nachrichten richtig ankommen
 		else
 			send_text(msg.to.print_name, "["..botName.."][Update] Already up-to-date.")
 		end
@@ -386,20 +386,16 @@ end)
 
 addCommand("reload", function(msg, args)
 	if(isAdmin(msg)) then
-		reload()
+		func, errorStr = loadfile(defaultFilePath)
+		if(func == nil) then
+			send_text(msg.to.print_name, "["..botName.."] An error occured while running the script:\n"..errorStr)
+		else
+			func()
+		end
 	else
 		send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
 	end
 end)
-
-function reload()
-	func, errorStr = loadfile(defaultFilePath)
-	if(func == nil) then
-		send_text(msg.to.print_name, "["..botName.."] An error occured while running the script:\n"..errorStr)
-	else
-		func()
-	end
-end
 
 addCommand("about", function (msg, args)
 	send_text(msg.to.print_name, "["..botName.."] is being developed by:\n - Marco von Raumer\n - David Enderlin\n - Marcel Schmutz\n©2014") 
