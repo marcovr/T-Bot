@@ -1,7 +1,7 @@
 -- IP Anzeige Modul
 domain = "tigerpi.tk"
 
-addCommand("getip", function(msg,args)
+addCommand("getip", function(msg,args) -- Ist defekt
 	if(isAdmin(msg)) then
 		outputv4 = tostring(os.capture("curl -s wman197.site40.net/test/ip.php", true))
 		outputv6 = tostring(os.capture("curl -s icanhazip.com", true))

@@ -471,12 +471,7 @@ addCommand("update", function(msg, args)
 		local text = os.capture("cd /home/pi/telegram/lua/ && git pull")
 		send_text(msg.to.print_name, "["..botName.."][Update] ".. text)
 		if (text ~= "Already up-to-date.") then
-			func, errorStr = loadfile(defaultFilePath)
-			if(func == nil) then
-				send_text(msg.to.print_name, "["..botName.."] An error occured while running the script:\n"..errorStr)
-			else
-				func()
-			end
+			postpone(reload, false, 1) -- delay dass Nachrichten richtig ankommen
 		end
 	else
 		send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
@@ -485,16 +480,20 @@ end)
 
 addCommand("reload", function(msg, args)
 	if(isAdmin(msg)) then
-		func, errorStr = loadfile(defaultFilePath)
-		if(func == nil) then
-			send_text(msg.to.print_name, "["..botName.."] An error occured while running the script:\n"..errorStr)
-		else
-			func()
-		end
+		reload()
 	else
 		send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
 	end
 end)
+
+function reload()
+	func, errorStr = loadfile(defaultFilePath)
+	if(func == nil) then
+		send_text(msg.to.print_name, "["..botName.."] An error occured while running the script:\n"..errorStr)
+	else
+		func()
+	end
+end
 
 addCommand("about", function (msg, args)
 	send_text(msg.to.print_name, "["..botName.."] is being developed by:\n - Marco von Raumer\n - David Enderlin\n - Marcel Schmutz\n©2014") 

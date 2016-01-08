@@ -1,6 +1,6 @@
 -- History Module
 
-local upperlimit = 100000
+local upperlimit = 100000 --muss irgendwann erhöht werden
 local topusers
 
 addCommand("history", function(msg,args)
