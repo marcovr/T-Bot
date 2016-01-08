@@ -37,37 +37,20 @@ end
 addCommand("msgcount", function(msg,args)
 	if(#args < 2) then
 		local cb_extra = {}
-		cb_extra.upperlimit = upperlimit
-		cb_extra.probevalue = upperlimit
-		cb_extra.lowerlimit = 0
 		cb_extra.target = msg.to.print_name
 		
 		if(#args == 0) then
-			cb_extra.peer = msg.to.print_name
+			get_msgcount(msg.to.print_name, msgcount_cb, cb_extra)
 		elseif(#args == 1) then
-			cb_extra.peer = args[1]
+			get_msgcount(args[1], msgcount_cb, cb_extra)
 		end
-		
-		get_history(cb_extra.peer, upperlimit, 1, msgcount_cb, cb_extra)
 	else
 		send_text(msg.to.print_name, "["..botName.."] Usage: msgcount [peer]")
 	end
 end)
 
 function msgcount_cb(extra, success, result)
-	if (result[0] ~= nil) then
-		extra.lowerlimit = extra.probevalue
-	else
-		extra.upperlimit = extra.probevalue
-	end
-	
-	extra.probevalue = math.floor((extra.upperlimit + extra.lowerlimit)/2)
-	
-	if extra.probevalue == extra.lowerlimit then
-		send_text(extra.target, "Message count: " .. extra.probevalue)
-	else
-		get_history(extra.peer, extra.probevalue, 1, msgcount_cb, extra)
-	end
+	send_text(extra.target, "Message count: " .. result)
 end
 
 -- WIP
@@ -106,11 +89,10 @@ function wordcount_cb(extra, success, result)
 	send_text(extra.target, "wordcount of ".. extra.word ..": " .. wordcount)
 end
 
-
+-- lists number of messages per user
 addCommand("topusers", function(msg,args)
 	if(#args < 2) then
 		local cb_extra = {}
-		local last
 		cb_extra.target = msg.to.print_name
 		cb_extra.step = 1000
 		topusers = {}
@@ -121,16 +103,20 @@ addCommand("topusers", function(msg,args)
 			cb_extra.peer = args[1]
 		end
 		
-		local msgcount = 20000 --WIP (needs to be replaced)
-		cb_extra.offset = msgcount-cb_extra.step
-		
-		
-		send_text(msg.to.print_name, "["..botName.."] Generating statistics - estimated waiting time: " .. math.floor(msgcount/cb_extra.step)*10 .. " seconds")
-		get_history(cb_extra.peer, cb_extra.offset, cb_extra.step, topusers_cb, cb_extra)
+		get_msgcount(cb_extra.peer, topusers_start, cb_extra) -- msgcount needed to start analyzing
 	else
 		send_text(msg.to.print_name, "["..botName.."] Usage: topusers [peer]")
 	end
 end)
+
+function topusers_start(extra, success, result)
+	local msgcount = result
+	extra.offset = msgcount-extra.step
+	
+	-- calculate approximate waiting time and start
+	send_text(msg.to.print_name, "["..botName.."] Generating statistics - estimated waiting time: " .. math.floor(msgcount/extra.step)*10 .. " seconds")
+	get_history(extra.peer, extra.offset, extra.step, topusers_cb, extra)
+end
 
 function topusers_cb(extra, success, result)
 	print(extra.offset)
@@ -164,4 +150,34 @@ end
 
 function postpone_history_cb(extra, success, result)
 	get_history(extra.peer, extra.offset, extra.step, topusers_cb, extra)
+end
+
+-- Counts total number of messages in chat
+-- on finish it calls: callback(extra, success, msgcount)
+function get_msgcount(peer, callback, extra)
+	local cb_extra = {}
+	cb_extra.upperlimit = upperlimit
+	cb_extra.probevalue = upperlimit
+	cb_extra.lowerlimit = 0
+	cb_extra.extra = extra
+	cb_extra.callback = callback
+	cb_extra.peer = peer
+	
+	get_history(peer, upperlimit, 1, get_msgcount_cb, cb_extra)
+end
+
+function get_msgcount_cb(extra, success, result)
+	if (result[0] ~= nil) then -- adjust limits
+		extra.lowerlimit = extra.probevalue
+	else
+		extra.upperlimit = extra.probevalue
+	end
+	
+	extra.probevalue = math.floor((extra.upperlimit + extra.lowerlimit)/2)
+	
+	if extra.probevalue == extra.lowerlimit then
+		extra.callback(extra.extra, true, extra.probevalue) -- finished
+	else
+		get_history(extra.peer, extra.probevalue, 1, get_msgcount_cb, extra) -- another loop
+	end
 end
