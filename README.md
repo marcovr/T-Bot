@@ -6,3 +6,5 @@ Be warned, the code is quite chaotic, heavily adjusted for our special needs and
 you may not be able to read it, because it's not english all the time.
 
 So if you're a stranger, you most likely won't be able to use it.
+
+TEST
