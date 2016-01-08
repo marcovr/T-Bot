@@ -121,7 +121,7 @@ addCommand("topusers", function(msg,args)
 			cb_extra.peer = args[1]
 		end
 		
-		local msgcount = 20000 --WIP
+		local msgcount = 20000 --WIP (needs to be replaced)
 		cb_extra.offset = msgcount-cb_extra.step
 		
 		
