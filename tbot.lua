@@ -149,6 +149,7 @@ function no_sense(extra, success, result)
 end
 
 -- Function to execute "cmd" in the standard command line and returns it's output.
+-- is needed to initialize
 function os.capture(cmd, raw)
 	local f = assert(io.popen(cmd, 'r'))
 	local s = assert(f:read('*a'))
@@ -170,7 +171,7 @@ addCommand("update", function(msg, args)
 			text = string.sub(text, endPos+15)														-- Remove version hashes from string
 			text = string.gsub(text, "([%+%-]+)%s", "%1\n")											-- Format file changes
 			send_text(msg.to.print_name, "["..botName.."][Update] Updating from <".. fromVersion .."> to <".. toVersion .. ">\n"..text)
-			postpone(chatCommands["reload"], {from={print_name="T-Bot"}}, 1) -- Safety delay to give the update process some time
+			postpone(chatCommands["reload"], {from={print_name="T-Bot"}}, 1)						-- Safety delay to give the update process some time (needs admin credentials)
 		else
 			send_text(msg.to.print_name, "["..botName.."][Update] Already up-to-date.")
 		end
