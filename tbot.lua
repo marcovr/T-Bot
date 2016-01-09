@@ -219,7 +219,9 @@ function loadModules()
 end
 
 -- Initialize
-loadLibs()
-loadModules()
-config.load() -- Load the config file
+get_contact_list()	-- Without contacts messaging will fail
+get_dialog_list()	-- Without dialogs messaging will fail
+loadLibs()			-- Load essential libraries
+loadModules()		-- Load additional modules
+config.load()		-- Load the config file
 send_text(mainGroup, "["..botName.."] T-Bot initialized!")
