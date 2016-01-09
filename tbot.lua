@@ -398,16 +398,6 @@ addCommand("about", function (msg, args)
 	send_text(msg.to.print_name, "["..botName.."] is being developed by:\n - Marco von Raumer\n - David Enderlin\n - Marcel Schmutz\n©2014") 
 end)
 
--- Unnötige funktion um zu reden mit T-Bot
-addCommand("talk", function(msg, args)
-	if(#args > 0) then
-		--os.execute("php -f /var/www/maclog/php/telegram/chat.php "..msg.to.print_name.." "..args[1])
-		send_text(msg.to.print_name, "["..botName.."] Cleverbot API is no longer available")
-	else
-		send_text(msg.to.print_name, "["..botName.."] Usage: talk <msg>")
-	end
-end)
-
 ------ Libraries Laden ------
 function loadLibs()
 	lsStr = os.capture("ls "..libPath)
