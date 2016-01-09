@@ -1,5 +1,5 @@
-﻿-- Globale Variablen definieren
-chatCommands = {} -- chatCommands[x].command = string des commands / chatCommands[x].func = function des commands
+﻿-- Define global variables
+chatCommands = {} -- chatCommands[command] = function of command
 mainGroup = "T-Bot_Dev_Chat"
 botName = "T-Bot"
 defaultFilePath = "/home/pi/telegram/lua/tbot.lua"
@@ -114,7 +114,7 @@ function on_secret_chat_update(user,what_changed)
 	hook.Call("tg_SecretChatUpdate", user, what_changed)
 end
 
------- Diverse Hilfs-functions ------
+------ Some core helper functions ------
 function booleanvalue(bool)
 	if bool then
 		return "TRUE"
@@ -123,12 +123,12 @@ function booleanvalue(bool)
 	end
 end
 
--- Function um neuen chat command zu machen
+-- Adds a new chat command
 function addCommand(command, func)
 	chatCommands[command] = func
 end
 
--- Überprüft ob der absender der msg admin ist
+-- Checks if sender is admin
 function isAdmin(msg)
 	for k, v in pairs(admins) do
 		if(msg.from.print_name == v) then
@@ -139,122 +139,13 @@ function isAdmin(msg)
 	return false
 end
 
--- Function um einen einfachen Text zu versenden
+-- Function to easily send a message
 function send_text(peer, msg)
 	send_msg(peer, msg, no_sense, false)
 end
 
--- Führt einen Befehl aus und gibt string zurück
-function os.capture(cmd, raw)
-  local f = assert(io.popen(cmd, 'r'))
-  local s = assert(f:read('*a'))
-  f:close()
-  if raw then return s end
-  s = string.gsub(s, '^%s+', '')
-  s = string.gsub(s, '%s+$', '')
-  s = string.gsub(s, '[\n\r]+', ' ')
-  return s
-end
-
--- Macht eine Kopie eines Tables
-function deepcopy(orig)
-    local orig_type = type(orig)
-    local copy
-    if orig_type == 'table' then
-        copy = {}
-        for orig_key, orig_value in next, orig, nil do
-            copy[deepcopy(orig_key)] = deepcopy(orig_value)
-        end
-        setmetatable(copy, deepcopy(getmetatable(orig)))
-    else -- number, string, boolean, etc
-        copy = orig
-    end
-    return copy
-end
-
--- Callback function von telegram-cli functions
+-- Empty callback function for tg-cli functions
 function no_sense(extra, success, result)
-end
-
--- Table Serialization Shit
--- Braucht man um Tables zu analysieren
-local function exportstring( s )
-  return string.format("%q", s)
-end
-
--- The Table display Function
-function table.show(tbl)
-  local charS,charE = "   ","\n"
-  local file = ""
-  if err then return err end
-
-  -- initiate variables for display procedure
-  local tables,lookup = { tbl },{ [tbl] = 1 }
-  file = file .. ( "return {"..charE )
-
-  for idx,t in ipairs( tables ) do
-	 file = file .. ( "-- Table: {"..idx.."}"..charE )
-	 file = file .. ( "{"..charE )
-	 local thandled = {}
-
-	 for i,v in ipairs( t ) do
-		thandled[i] = true
-		local stype = type( v )
-		-- only handle value
-		if stype == "table" then
-		   if not lookup[v] then
-			  table.insert( tables, v )
-			  lookup[v] = #tables
-		   end
-		   file = file .. ( charS.."{"..lookup[v].."},"..charE )
-		elseif stype == "string" then
-		   file = file .. (  charS..exportstring( v )..","..charE )
-		elseif stype == "number" then
-		   file = file .. (  charS..tostring( v )..","..charE )
-		end
-	 end
-
-	 for i,v in pairs( t ) do
-		-- escape handled values
-		if (not thandled[i]) then
-		
-		   local str = ""
-		   local stype = type( i )
-		   -- handle index
-		   if stype == "table" then
-			  if not lookup[i] then
-				 table.insert( tables,i )
-				 lookup[i] = #tables
-			  end
-			  str = charS.."[{"..lookup[i].."}]="
-		   elseif stype == "string" then
-			  str = charS.."["..exportstring( i ).."]="
-		   elseif stype == "number" then
-			  str = charS.."["..tostring( i ).."]="
-		   end
-		
-		   if str ~= "" then
-			  stype = type( v )
-			  -- handle value
-			  if stype == "table" then
-				 if not lookup[v] then
-					table.insert( tables,v )
-					lookup[v] = #tables
-				 end
-				 file = file .. ( str.."{"..lookup[v].."},"..charE )
-			  elseif stype == "string" then
-				 file = file .. ( str..exportstring( v )..","..charE )
-			  elseif stype == "number" then
-				 file = file .. ( str..tostring( v )..","..charE )
-			  end
-		   end
-		end
-	 end
-	 file = file .. ( "},"..charE )
-  end
-  file = file .. ( "}" )
-  
-  return file
 end
 
 ------ Vital Chat Commands ------
