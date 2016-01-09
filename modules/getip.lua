@@ -16,7 +16,5 @@ addCommand("getip", function(msg,args) -- Ist defekt
 		else
 			send_text(msg.to.print_name, "["..botName.."] Empty")
 		end
-	else
-		send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
 	end
 end)

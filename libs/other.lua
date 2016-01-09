@@ -1,5 +1,5 @@
 --[[ Docs:
-This library is just a random collection of functions which doen't fit into another library.
+This library is just a random collection of functions which don't fit into another library.
 
 os.capture(cmd, raw)
 	Executes "cmd" in the standard command line and returns it's output.

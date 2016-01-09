@@ -79,7 +79,7 @@ function on_msg_receive(msg)
 			for k, v in pairs(chatCommands) do
 				if(chatCommands[command] ~= nil) then
 					commandExist = true
-					if (quoteClosed or command == "lua" or command == "luas") then -- Lua command should ignore quotes
+					if (quoteClosed or command == "lua" or command == "luas" or command == "sh") then -- Lua and Shell command should ignore quotes
 						chatCommands[command](msg, qArgs)
 					else -- If there are unclosed quotes
 						send_text(msg.to.print_name, "["..botName.."] Error: Not every quote is closed!")
@@ -135,7 +135,7 @@ function isAdmin(msg)
 			return true
 		end
 	end
-	
+	send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
 	return false
 end
 
@@ -162,8 +162,6 @@ addCommand("update", function(msg, args)
 		else
 			send_text(msg.to.print_name, "["..botName.."][Update] Already up-to-date.")
 		end
-	else
-		send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
 	end
 end)
 
@@ -175,8 +173,6 @@ addCommand("reload", function(msg, args)
 		else
 			func()
 		end
-	else
-		send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
 	end
 end)
 

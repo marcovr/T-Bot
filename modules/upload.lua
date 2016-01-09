@@ -41,8 +41,6 @@ addCommand("uploadfile", function(msg, args)
 		else
 			send_text(msg.to.print_name, "["..botName.."] Usage: uploadfile <targetFileName>")
 		end
-	else
-		send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
 	end
 end)
 
@@ -80,8 +78,6 @@ addCommand("luau", function(msg, args)
 				end
 			end
 		end)
-	else
-		send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
 	end
 end)
 

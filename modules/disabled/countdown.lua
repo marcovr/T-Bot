@@ -25,8 +25,6 @@ addCommand("countdown", function(msg, args)
 		else
 			send_text(msg.to.print_name, "["..botName.."] Usage: countdown <seconds/stop>")
 		end
-	else
-		send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
 	end
 end)
 

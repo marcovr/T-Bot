@@ -33,7 +33,6 @@ addCommand("shell", function(msg, args)
 				
 		return true
 	else
-		send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
 		return false
 	end
 end)
@@ -51,7 +50,6 @@ addCommand("exit", function(msg,args)
 		send_text(msg.to.print_name, "["..botName.."] You can't leave the interactive shell because you aren't in there!")
 		return false
 	else
-		send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
 		return false
 	end
 end)

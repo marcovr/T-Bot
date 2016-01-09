@@ -33,8 +33,6 @@ addCommand("startvote", function(msg, args)
 		else
 			send_text(msg.to.print_name, "["..botName.."] Usage: startvote <question> <votecount> <answ1> <answ2> ...")
 		end
-	else
-		send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
 	end
 end)
 

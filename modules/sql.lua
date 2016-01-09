@@ -24,8 +24,6 @@ addCommand("sql", function(msg,args)
 		else
 			send_text(msg.to.print_name, "["..botName.."] Usage: sql <db> <statement>")
 		end
-	else
-		send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
 	end
 end)
 
@@ -79,8 +77,6 @@ addCommand("getuser", function(msg, args)
 			else
 				send_text(msg.to.print_name, "["..botName.."] Usage: getuser <searchterm>")
 			end
-		else
-			send_text(msg.to.print_name, "["..botName.."] Admin-Only Command")
 		end
 	else
 		send_text(msg.to.print_name, "["..botName.."] Unknown command")
