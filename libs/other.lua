@@ -1,27 +1,12 @@
 --[[ Docs:
 This library is just a random collection of functions which don't fit into another library.
 
-os.capture(cmd, raw)
-	Executes "cmd" in the standard command line and returns it's output.
-	If "raw" == true, returns the output unformatted.
-
 deepcopy(variable)
 	Makes a true copy (not just a reference) of a given variable.
 	
 table.show(table)
 	Returns a readable representation of a table as string.
 ]]
-
---[[function os.capture(cmd, raw)
-	local f = assert(io.popen(cmd, 'r'))
-	local s = assert(f:read('*a'))
-	f:close()
-	if raw then return s end
-	s = string.gsub(s, '^%s+', '')
-	s = string.gsub(s, '%s+$', '')
-	s = string.gsub(s, '[\n\r]+', ' ')
-	return s
-end]]--
 
 function deepcopy(orig)
 	local orig_type = type(orig)
