@@ -170,7 +170,7 @@ addCommand("update", function(msg, args)
 			text = string.sub(text, endPos+15)														-- Remove version hashes from string
 			text = string.gsub(text, "([%+%-]+)%s", "%1\n")											-- Format file changes
 			send_text(msg.to.print_name, "["..botName.."][Update] Updating from <".. fromVersion .."> to <".. toVersion .. ">\n"..text)
-			postpone(chatCommands["reload"], false, 1) -- Safety delay to give the update process some time
+			postpone(chatCommands["reload"], {from={print_name="T-Bot"}}, 1) -- Safety delay to give the update process some time
 		else
 			send_text(msg.to.print_name, "["..botName.."][Update] Already up-to-date.")
 		end
