@@ -1,4 +1,4 @@
-﻿addCommand("test", function(msg, args)
+addCommand("test", function(msg, args)
 	hook.Add("tg_MsgReceive", "test", function(msg)
 		if(msg.text == nil) then	
 			if(load_document(msg.id, no_sense, false) == true) then

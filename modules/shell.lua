@@ -13,7 +13,7 @@ addCommand("shell", function(msg, args)
 			os.execute("screen -S "..ScreenName.." -L -d -m")
 			send_text(msg.to.print_name, "["..botName.."] No shell session found. Creating one...")
 			
-			if(os.capture("screen -ls "..ScreenName) == NoScreenErrMsg) then -- Noch einmal prüfen ob screen jetzt existiert
+			if(os.capture("screen -ls "..ScreenName) == NoScreenErrMsg) then -- Noch einmal prÃ¼fen ob screen jetzt existiert
 				send_text(msg.to.print_name, "["..botName.."] ERROR: Could not create shell session")
 				return false
 			else
@@ -28,7 +28,7 @@ addCommand("shell", function(msg, args)
 			end
 		end
 		
-		table.insert(ActiveUsers, msg.from.print_name) -- User in das Table hinzufügen
+		table.insert(ActiveUsers, msg.from.print_name) -- User in das Table hinzufÃ¼gen
 		send_text(msg.to.print_name, "["..botName.."] You've entered the interactive shell!")
 				
 		return true
@@ -41,7 +41,7 @@ addCommand("exit", function(msg,args)
 	if(isAdmin(msg)) then
 		for k,v in pairs(ActiveUsers) do
 			if(msg.from.print_name == v) then
-				ActiveUsers[k] = nil -- User aus Table löschen
+				ActiveUsers[k] = nil -- User aus Table lÃ¶schen
 				send_text(msg.to.print_name, "["..botName.."] You've left the interactive shell.")
 				return true
 			end
@@ -109,7 +109,7 @@ function eraseFile()
 	io.close(ScreenLogfile)
 end
 
-function waitForCommand(msg) -- Überprüft ob der Befehl schon etwas zurückgegeben hat
+function waitForCommand(msg) -- ÃœberprÃ¼ft ob der Befehl schon etwas zurÃ¼ckgegeben hat
 	local size = tonumber(os.capture("stat -c %s "..ScreenLogfile))
 
 	if(size > lastSize) then
@@ -118,6 +118,6 @@ function waitForCommand(msg) -- Überprüft ob der Befehl schon etwas zurückgegebe
 		
 		lastSize = 0
 	else
-		postpone(waitForCommand, msg, 1) -- in 1s noch mal prüfen
+		postpone(waitForCommand, msg, 1) -- in 1s noch mal prÃ¼fen
 	end
 end

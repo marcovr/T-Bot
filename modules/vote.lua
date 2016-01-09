@@ -1,4 +1,4 @@
-﻿-- Voting Module
+-- Voting Module
 question = ""
 answers = {}
 voters = {}

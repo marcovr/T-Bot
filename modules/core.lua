@@ -110,14 +110,14 @@ end)
 
 addCommand("ls", function(msg, args)
 	local cmds = ""
-    for key, value in pairs(chatCommands) do
-        if key ~= "getuser" then
-            cmds = cmds..key.."\n"
-        end
-    end
-    send_text(msg.to.print_name, "["..botName.."] Available commands:\n"..cmds)
+	for key, value in pairs(chatCommands) do
+		if key ~= "getuser" then
+			cmds = cmds..key.."\n"
+		end
+	end
+	send_text(msg.to.print_name, "["..botName.."] Available commands:\n"..cmds)
 end)
 
 addCommand("about", function (msg, args)
-	send_text(msg.to.print_name, "["..botName.."] is being developed by:\n - Marco von Raumer\n - David Enderlin\n - Marcel Schmutz\n©2014") 
+	send_text(msg.to.print_name, "["..botName.."] is being developed by:\n - Marco von Raumer\n - David Enderlin\n - Marcel Schmutz\nÂ©2014") 
 end)

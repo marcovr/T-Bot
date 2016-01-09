@@ -1,4 +1,4 @@
-﻿-- Timeleft Modul (Titel ist wichtig)
+-- Timeleft Modul (Titel ist wichtig)
 			
 					--Zeiten direkt in Min umegerechnet
 local Stundenplan 	= {	{485,530},{535,575},{580,625},{640,685},{690,735},{745,790},{795,840},
@@ -76,13 +76,13 @@ function timeleft(msg,arg)
 		local timeDiff=(b[2]*60)-timeSec
 		local timeDiffsec=timeDiff % 60
 		local timeDiffmin=(timeDiff-timeDiffsec)/60
-       local fertig
+	   local fertig
 
-    if a+1>#dayLesson then
-        fertig = "no next lesson"
-    else
-        fertig = dayLesson[a+1]
-    end
+	if a+1>#dayLesson then
+		fertig = "no next lesson"
+	else
+		fertig = dayLesson[a+1]
+	end
 
 		if timeSec>=(b[1]*60) and timeSec<(b[2]*60) then --LessonOutput
 			send_text(msg.to.print_name,"Current Lesson: "..dayLesson[a].."\nNext Lesson: "..fertig.."\nTime left: "..timeDiffmin.." min "..timeDiffsec.." s \n"..name)

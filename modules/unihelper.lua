@@ -1,4 +1,4 @@
-﻿-- Timeleft Modul (Titel ist wichtig)
+-- Timeleft Modul (Titel ist wichtig)
 
 local days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"}
 local masterTable = {

@@ -1,4 +1,4 @@
-﻿-- Define global variables
+-- Define global variables
 chatCommands = {} -- chatCommands[command] = function of command
 mainGroup = "T-Bot_Dev_Chat"
 botName = "T-Bot"

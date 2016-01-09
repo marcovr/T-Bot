@@ -1,4 +1,4 @@
-﻿-- Reminder Module
+-- Reminder Module
 local driver = require "luasql.mysql"
 local env = driver.mysql()
 

@@ -8,7 +8,7 @@ function keepAlive()
 		send_text(mainGroup, "["..botName.."] No heartbeat session found. Creating one...")
 		os.execute("screen -S "..ScreenName.." -d -m")
 		
-		if(os.capture("screen -ls "..ScreenName) == NoScreenErrMsg) then -- Noch einmal prüfen ob screen jetzt existiert
+		if(os.capture("screen -ls "..ScreenName) == NoScreenErrMsg) then -- Noch einmal prÃ¼fen ob screen jetzt existiert
 			send_text(mainGroup, "["..botName.."] ERROR: Could not create heartbeat session.")
 			return false
 		else

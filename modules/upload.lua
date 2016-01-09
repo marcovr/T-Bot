@@ -1,4 +1,4 @@
-﻿-- File Uploading Module
+-- File Uploading Module
 local uploader = ""
 local targetFileName = ""
 local downloadFolder = "/home/pi/downloads/"
