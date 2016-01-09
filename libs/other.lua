@@ -12,7 +12,7 @@ table.show(table)
 	Returns a readable representation of a table as string.
 ]]
 
-function os.capture(cmd, raw)
+--[[function os.capture(cmd, raw)
 	local f = assert(io.popen(cmd, 'r'))
 	local s = assert(f:read('*a'))
 	f:close()
@@ -21,7 +21,7 @@ function os.capture(cmd, raw)
 	s = string.gsub(s, '%s+$', '')
 	s = string.gsub(s, '[\n\r]+', ' ')
 	return s
-end
+end]]--
 
 function deepcopy(orig)
 	local orig_type = type(orig)

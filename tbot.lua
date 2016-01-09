@@ -148,6 +148,18 @@ end
 function no_sense(extra, success, result)
 end
 
+-- Function to execute "cmd" in the standard command line and returns it's output.
+function os.capture(cmd, raw)
+	local f = assert(io.popen(cmd, 'r'))
+	local s = assert(f:read('*a'))
+	f:close()
+	if raw then return s end
+	s = string.gsub(s, '^%s+', '')
+	s = string.gsub(s, '%s+$', '')
+	s = string.gsub(s, '[\n\r]+', ' ')
+	return s
+end
+
 ------ Vital Chat Commands ------
 addCommand("update", function(msg, args)
 	if(isAdmin(msg)) then
