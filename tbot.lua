@@ -34,14 +34,14 @@ function on_msg_receive(msg)
 	end
 		
 	if(msg.text ~= nil) then
-		if(string.sub(msg.text,1,1) == "!" or string.sub(msg.text,1,1) == "/") then -- Hier kommt ein Befehl
-			mark_read(msg.to.print_name, no_sense, false) -- Hat Nachricht gelesen
+		if(string.sub(msg.text,1,1) == "!" or string.sub(msg.text,1,1) == "/") then
+			mark_read(msg.to.print_name, no_sense, false) -- Mark message as read
 			local subStrings = {}
-			for subStr in string.gmatch(string.sub(msg.text,2),"%S+") do table.insert(subStrings, subStr) end -- Chatnachricht parsen
+			for subStr in string.gmatch(string.sub(msg.text,2),"%S+") do table.insert(subStrings, subStr) end -- Split message
 			
 			local args = {}
-			args = deepcopy(subStrings) -- Kopie des Arrays anlegen
-			table.remove(args,1) -- Erstes Element ist der Befehl, deshalb erstes Element löschen um Argumente zu bekommen
+			args = deepcopy(subStrings) -- Make a true copy of array
+			table.remove(args,1) -- Remove first element, since it's the command itself
 			
 			local qArgs = {}
 			
@@ -79,21 +79,21 @@ function on_msg_receive(msg)
 			for k, v in pairs(chatCommands) do
 				if(chatCommands[command] ~= nil) then
 					commandExist = true
-					if (quoteClosed or command == "lua" or command == "luas") then -- Lua Befehl soll quote Regelung ignorieren
+					if (quoteClosed or command == "lua" or command == "luas") then -- Lua command should ignore quotes
 						chatCommands[command](msg, qArgs)
-					else -- Wenn beim Quotes parsen ein Problem aufgetreten ist
+					else -- If there are unclosed quotes
 						send_text(msg.to.print_name, "["..botName.."] Error: Not every quote is closed!")
 					end
 					break
 				end
 			end
 			
-			if (not commandExist) then -- Wenn Befehl nicht existiert hat
+			if (not commandExist) then -- If command wasn't existing
 				send_text(msg.to.print_name, "["..botName.."] Unknown command")
 			end
 		else
 			if toTbot then
-				mark_read(msg.to.print_name, no_sense, false) -- Nachricht gelesen
+				mark_read(msg.to.print_name, no_sense, false) -- Mark message as read
 				if msg.from.print_name == "Telegram" then
 					send_text(mainGroup, "["..botName.."] "..msg.text)
 				end
