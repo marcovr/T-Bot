@@ -9,6 +9,11 @@ modulePath = "/home/pi/telegram/lua/modules/"
 local admins = {"David_Enderlin", "Johann_Chervet", "Marco_von_Raumer", "T-Bot", "Marcel_Schmutz"}
 
 ------ Event handling ------
+function on_startup_ready(extra, arg1_string)
+	print("[LUA] ready triggered!")
+	hook.Call("on_startup_ready")
+end
+
 function on_binlog_replay_end()
 	hook.Call("tg_BinLogReplayEnd")
 end
@@ -189,6 +194,21 @@ addCommand("reload", function(msg, args)
 	end
 end)
 
+------ Register Commands -----
+function registerCommands()
+	if (already_started_up == nil) then
+		already_started_up = true
+		-- Register startup command - used to trigger on_startup_ready
+		-- usage: register_interface_function("name", function, extra, "help description", "arg1_type", ["arg2_type" ...])
+		-- possible arg_types: user, chat, secret_chat, peer, file_name, file_name_end, period, number, double, string_end, string
+		if (register_interface_function("startup", on_startup_ready, "", "startup <string>        initializes lua at startup", "string")) then
+			print("[LUA] registered startup command!")
+		else
+			send_text(mainGroup, "["..botName.."] Error registering startup command")
+		end
+	end
+end
+
 ------ Load Libraries ------
 function loadLibs()
 	lsStr = os.capture("ls "..libPath)
@@ -220,8 +240,7 @@ function loadModules()
 end
 
 -- Initialize
-get_contact_list()	-- Without contacts messaging will fail
-get_dialog_list()	-- Without dialogs messaging will fail
+registerCommands()	-- Registers interface commands
 loadLibs()			-- Load essential libraries
 loadModules()		-- Load additional modules
 config.load()		-- Load the config file
