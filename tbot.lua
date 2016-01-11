@@ -9,12 +9,12 @@ modulePath = "/home/pi/telegram/lua/modules/"
 local admins = {"David_Enderlin", "Johann_Chervet", "Marco_von_Raumer", "T-Bot", "Marcel_Schmutz"}
 
 ------ Event handling ------
-function on_startup_ready()
+function on_startup_ready() -- gets triggered after startup as soon as messaging is ready
 	print("[LUA] ready triggered!")
 	hook.Call("on_startup_ready")
 end
 
-function on_cron_interval()
+function on_cron_interval() -- gets triggered every 5 minutes by cronjob
 	print("[LUA] interval triggered!")
 	hook.Call("on_cron_interval")
 end
