@@ -9,7 +9,7 @@ modulePath = "/home/pi/telegram/lua/modules/"
 local admins = {"David_Enderlin", "Johann_Chervet", "Marco_von_Raumer", "T-Bot", "Marcel_Schmutz"}
 
 ------ Event handling ------
-function on_startup_ready(extra, arg1_string)
+function on_startup_ready()
 	print("[LUA] ready triggered!")
 	hook.Call("on_startup_ready")
 end
@@ -196,16 +196,13 @@ end)
 
 ------ Register Commands -----
 function registerCommands()
-	if (already_started_up == nil) then
-		already_started_up = true
-		-- Register startup command - used to trigger on_startup_ready
-		-- usage: register_interface_function("name", function, extra, "help description", "arg1_type", ["arg2_type" ...])
-		-- possible arg_types: user, chat, secret_chat, peer, file_name, file_name_end, period, number, double, string_end, string
-		if (register_interface_function("startup", on_startup_ready, "", "startup <string>        initializes lua at startup", "string")) then
-			print("[LUA] registered startup command!")
-		else
-			send_text(mainGroup, "["..botName.."] Error registering startup command")
-		end
+	-- Register startup command - used to trigger on_startup_ready
+	-- usage: register_interface_function("name", function, extra, "help description", "arg1_type", ["arg2_type" ...])
+	-- possible arg_types: user, chat, secret_chat, peer, file_name, file_name_end, period, number, double, string_end, string
+	if (register_interface_function("startup", on_startup_ready, "", "startup <string>        initializes lua at startup", "string")) then
+		print("[LUA] registered startup command!")
+	else
+		send_text(mainGroup, "["..botName.."] Error registering startup command")
 	end
 end
 
@@ -240,7 +237,12 @@ function loadModules()
 end
 
 -- Initialize
-registerCommands()	-- Registers interface commands
+if (already_started_up == nil) then
+	already_started_up = true					-- Prevent multiple executions
+	get_contact_list(no_sense, false)			-- Get contact_list to send messages
+	get_dialog_list(on_startup_ready, false)	-- Get dialog list to send messages
+	registerCommands()							-- Registers interface commands
+end
 loadLibs()			-- Load essential libraries
 loadModules()		-- Load additional modules
 config.load()		-- Load the config file
