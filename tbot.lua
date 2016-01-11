@@ -14,6 +14,11 @@ function on_startup_ready()
 	hook.Call("on_startup_ready")
 end
 
+function on_cron_interval()
+	print("[LUA] interval triggered!")
+	hook.Call("on_cron_interval")
+end
+
 function on_binlog_replay_end()
 	hook.Call("tg_BinLogReplayEnd")
 end
@@ -199,10 +204,10 @@ function registerCommands()
 	-- Register startup command - used to trigger on_startup_ready
 	-- usage: register_interface_function("name", function, extra, "help description", "arg1_type", ["arg2_type" ...])
 	-- possible arg_types: user, chat, secret_chat, peer, file_name, file_name_end, period, number, double, string_end, string
-	if (register_interface_function("startup", on_startup_ready, "", "startup <string>        initializes lua at startup", "string")) then
-		print("[LUA] registered startup command!")
+	if (register_interface_function("interval", on_cron_interval, "", "interval <string>       triggers on_cron_interval event", "string")) then
+		print("[LUA] registered interval command!")
 	else
-		send_text(mainGroup, "["..botName.."] Error registering startup command")
+		send_text(mainGroup, "["..botName.."] Error registering interval command")
 	end
 end
 

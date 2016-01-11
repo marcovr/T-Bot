@@ -97,4 +97,36 @@ function uploading(msg) -- Überprüft ob file seit letztem mal grösser geworde
 	end
 end
 
--- function remindercheck wurde ausgelagert nach (/home/pi/remindercheck.lua) und wird mittels cronjob aufgerufen (da postpone unzuverlässig)
+-- remindercheck
+hook.Add("on_cron_interval", "ReminderCheck", function ()
+	local con, err = env:connect("tbot",config.getValue("sqluser"),config.getValue("sqlpw"),"localhost")
+	if(con == nil) then
+		send_text(mainGroup, "["..botName.."] "..err)
+		return false
+	end
+	
+	local result, err = con:execute("SELECT * FROM reminders")
+	if(result ~= nil) then
+		local temp = {}
+		while(result:fetch(temp, "a") ~= nil) do 
+			if(tonumber(temp.TIME) <= os.time()) then
+				if(temp.ATTACHMENT == "nil") then
+					send_text(temp.TARGET, "["..botName.."] Reminder: "..temp.MSG)
+					con:execute("DELETE FROM reminders WHERE ID="..temp.ID)
+				else
+					send_text(temp.TARGET, "["..botName.."] Reminder: "..temp.MSG)
+					con:execute("DELETE FROM reminders WHERE ID="..temp.ID)
+					filename, fileid = temp.ATTACHMENT:match("([^:]+):([^:]+)")
+					os.execute("rm -rf "..downloadFolder.."temp/*")
+					os.execute("mv "..downloadFolder..fileid.." "..downloadFolder.."temp/"..filename)
+					send_document(temp.TARGET, downloadFolder.."temp/"..filename, no_sense, false)
+				end
+			end
+		end
+		result:close()
+	else
+		send_text(mainGroup, "["..botName.."] "..err)
+	end
+
+	con:close()
+end)
