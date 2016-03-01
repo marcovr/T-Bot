@@ -23,12 +23,11 @@ function config.load()
 	local file, err = io.open("config.cfg", "r")
 	
 	if(file ~= nil) then
-		
-		line = file:read()
+		local line = file:read()
 	
 		while line ~= nil do
-			key = string.match(line, "(.+):")
-			value = string.match(line, ":(.+)")
+			local key = string.match(line, "(.+):")
+			local value = string.match(line, ":(.+)")
 			
 			configValues[key] = value
 			
