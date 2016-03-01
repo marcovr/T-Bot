@@ -248,7 +248,8 @@ if (already_started_up == nil) then
 	get_dialog_list(on_startup_ready, false)	-- Get dialog list to send messages
 	registerCommands()							-- Registers interface commands
 end
+
 loadLibs()			-- Load essential libraries
-loadModules()		-- Load additional modules
 config.load()		-- Load the config file
+loadModules()		-- Load additional modules
 send_text(mainGroup, "["..botName.."] T-Bot initialized!")
