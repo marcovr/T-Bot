@@ -2,10 +2,14 @@
 local driver = require "luasql.mysql"
 local env = driver.mysql()
 
+-- Load Config
+local sqluser = config.getValue("sqluser")
+local sqlpw = config.getValue("sqlpw")
+
 addCommand("sql", function(msg,args)
 	if(isAdmin(msg)) then
 		if(#args == 2) then
-			local con, err = env:connect(args[1], config.getValue("sqluser"),config.getValue("sqlpw"),"localhost")
+			local con, err = env:connect(args[1], sqluser, sqlpw, "localhost")
 			if(con == nil) then
 				send_text(msg.to.print_name, "["..botName.."] "..err)
 				return false
@@ -31,7 +35,7 @@ addCommand("getuser", function(msg, args)
 	if(msg.to.print_name == "Tiger_Tiger" or msg.to.print_name == "M-Bot_Dev_Chat") then -- Befehl auf Tiger_Tiger Gruppe begrenzen
 		if(isAdmin(msg)) then
 			if(#args > 0) then
-				local con, err = env:connect("maclog_data",config.getValue("sqluser"),config.getValue("sqlpw"),"localhost")
+				local con, err = env:connect("maclog_data", sqluser, sqlpw, "localhost")
 				if(con == nil) then
 					send_text(msg.to.print_name, "["..botName.."] "..err)
 					return false
