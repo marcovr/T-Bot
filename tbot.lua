@@ -2,9 +2,10 @@
 chatCommands = {} -- chatCommands[command] = function of command
 mainGroup = "T-Bot_Dev_Chat"
 botName = "T-Bot"
-defaultFilePath = "/home/pi/telegram/lua/tbot.lua"
-libPath = "/home/pi/telegram/lua/libs/"
-modulePath = "/home/pi/telegram/lua/modules/"
+installPath = "/home/pi/telegram/lua"
+defaultFilePath = installPath.."/tbot.lua"
+libPath = installPath.."/libs/"
+modulePath = installPath.."/modules/"
 
 local admins = {"David_Enderlin", "Johann_Chervet", "Marco_von_Raumer", "T-Bot", "Marcel_Schmutz"}
 
