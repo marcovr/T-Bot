@@ -16,7 +16,7 @@ function on_startup_ready() -- gets triggered after startup as soon as messaging
 end
 
 function on_cron_interval() -- gets triggered every 5 minutes by cronjob
-	print("[LUA] cron interval triggered!")
+	--print("[LUA] cron interval triggered!")
 	hook.Call("on_cron_interval")
 end
 
