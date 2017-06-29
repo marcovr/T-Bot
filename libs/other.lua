@@ -1,98 +1,114 @@
 --[[ Docs:
 This library is just a random collection of functions which don't fit into another library.
 
-deepcopy(variable)
+table.deepcopy(variable)
 	Makes a true copy (not just a reference) of a given variable.
-	
+
 table.show(table)
 	Returns a readable representation of a table as string.
+
+stringify(...)
+	Like to tostring() but supports multiple arguments and displays tables.
+
+getArguments(text)
+	Returns a table of arguments extracted from text.
 ]]
 
-function deepcopy(orig)
-	local orig_type = type(orig)
-	local copy
-	if orig_type == 'table' then
-		copy = {}
+function table.deepcopy(orig)
+	if type(orig) == 'table' then
+		local copy = {}
 		for orig_key, orig_value in next, orig, nil do
-			copy[deepcopy(orig_key)] = deepcopy(orig_value)
+			copy[table.deepcopy(orig_key)] = table.deepcopy(orig_value)
 		end
-		setmetatable(copy, deepcopy(getmetatable(orig)))
+		setmetatable(copy, table.deepcopy(getmetatable(orig)))
+		return copy
 	else -- number, string, boolean, etc
-		copy = orig
+		return orig
 	end
-	return copy
 end
 
-function table.show(tbl)
-  local charS,charE = "   ","\n"
-  local file = ""
-  if err then return err end
-
-  -- Initiate variables for display procedure
-  local tables,lookup = { tbl },{ [tbl] = 1 }
-  file = file .. ( "return {"..charE )
-
-  for idx,t in ipairs( tables ) do
-	 file = file .. ( "-- Table: {"..idx.."}"..charE )
-	 file = file .. ( "{"..charE )
-	 local thandled = {}
-
-	 for i,v in ipairs( t ) do
-		thandled[i] = true
-		local stype = type( v )
-		-- Only handle value
-		if stype == "table" then
-		   if not lookup[v] then
-			  table.insert( tables, v )
-			  lookup[v] = #tables
-		   end
-		   file = file .. ( charS.."{"..lookup[v].."},"..charE )
-		elseif stype == "string" then
-		   file = file .. (  charS..string.format("%q", v )..","..charE )
-		elseif stype == "number" then
-		   file = file .. (  charS..tostring( v )..","..charE )
-		end
-	 end
-
-	 for i,v in pairs( t ) do
-		-- Escape handled values
-		if (not thandled[i]) then
+function table.show(tbl, i, seen)
+	if not seen then
+		seen = {}
+		seen[seen] = true
+	end
+	if not i then
+		i = ""
+	end
+	local text = "{\n"
+	local s={}
+	local i2 = i.."\t"
+	seen[tbl]=true
+	
+	for k in pairs(tbl) do
+		table.insert(s, k)
+	end
+	table.sort(s)
+	for k,v in ipairs(s) do
+		text = text..i2..tostring(v)
+		v = tbl[v]
 		
-		   local str = ""
-		   local stype = type( i )
-		   -- Handle index
-		   if stype == "table" then
-			  if not lookup[i] then
-				 table.insert( tables,i )
-				 lookup[i] = #tables
-			  end
-			  str = charS.."[{"..lookup[i].."}]="
-		   elseif stype == "string" then
-			  str = charS.."["..string.format("%q", i ).."]="
-		   elseif stype == "number" then
-			  str = charS.."["..tostring( i ).."]="
-		   end
-		
-		   if str ~= "" then
-			  stype = type( v )
-			  -- Handle value
-			  if stype == "table" then
-				 if not lookup[v] then
-					table.insert( tables,v )
-					lookup[v] = #tables
-				 end
-				 file = file .. ( str.."{"..lookup[v].."},"..charE )
-			  elseif stype == "string" then
-				 file = file .. ( str..string.format("%q", v )..","..charE )
-			  elseif stype == "number" then
-				 file = file .. ( str..tostring( v )..","..charE )
-			  end
-		   end
+		if type(v) == "function" then
+			text = text.."()\n"
+		elseif type(v) == "table" and not seen[v] then
+			text = text.." = "..table.show(v, i2, seen).."\n"
+		else
+			text = text.." = "..tostring(v).."\n"
 		end
-	 end
-	 file = file .. ( "},"..charE )
-  end
-  file = file .. ( "}" )
-  
-  return file
+	end
+	return text..i .."}"
+end
+
+function stringify(...)
+	local args = {...}
+	
+	local n = select("#", ...)
+	
+	for i = 1, n do
+		if type(args[i]) == "table" then
+			args[i] = table.show(args[i])
+		else
+			args[i] = tostring(args[i])
+		end
+	end	
+	return table.concat(args, " ")
+end
+
+function getArguments(text)
+	local words = {}
+	for word in string.gmatch(string.sub(text, 2), "%S+") do
+		table.insert(words, word)
+	end
+	
+	local args = {}
+	local quoteClosed = true
+	local skip = 2
+	
+	for k = 2, #words do -- Quotes parsen
+		if k >= skip then
+			local word = words[k]
+			if string.sub(word, -1) == "\"" and string.sub(word, 1, 1) == "\"" then -- Wenn Anfangsquote auch Endquote ist
+				table.insert(args, string.sub(word, 2, -2))
+			elseif string.sub(word, 1, 1) == "\"" then -- Wenn Anfangsquote gefunden wurde
+				quoteClosed = false
+				for i = k + 1, #words do -- Durch alle restlichen Argumente gehen und Endquote suchen
+					if string.sub(words[i], -1) == "\"" then -- Wenn Endquote gefunden wurde
+						quoteClosed = true -- Quote wurde geschlossen
+						local arg = string.sub(word, 2) -- Argument mit Anfangsquote zu arg hinzufügen
+						for j = k + 1, i - 1 do -- Von Anfangs+1 bis Endquote-1 durchgehen
+							arg = arg.." "..words[j] -- Argumente zwischen Anfangs und Endquote zu arg hinzufügen
+						end
+						arg = arg.." "..string.sub(words[i], 1, -2) -- Argument mit Endquote zu arg hinzufügen
+						skip = i + 1 -- Bis nach die Quote skippen
+						table.insert(args, arg) -- arg in neues Argument-Table hinzufügen
+						break
+					end
+				end
+			else
+				table.insert(args, word)
+			end
+		end
+	end
+	
+	return quoteClosed, args
 end
