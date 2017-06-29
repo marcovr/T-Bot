@@ -1,92 +1,76 @@
 -- Voting Module
-question = ""
-answers = {}
-voters = {}
-votecount = 1
+local question = ""
+local answers = {}
+local voters = {}
+local votecount = 1
 
-addCommand("startvote", function(msg, args)
-	if(isAdmin(msg)) then
-		if(#args >= 4) then
-			-- clearen
-			answers = {}
-			voters = {}
+local function s(n)
+	return n == 1 and "" or "s"
+end
+
+commands.add("startvote", function(msg, args)
+	if #args >= 4 then
+		-- clearen
+		answers = {}
+		voters = {}
+		
+		question = args[1] -- Frage setzen
+		votecount = tonumber(args[2]) -- Anzahl Stimmen setzen
+		
+		table.remove(args, 1) -- Frage aus args table löschen
+		table.remove(args, 1) -- Stimmen aus args table löschen
+		
+		local message = "Vote: \n---- "..question.." ----\n"
+		
+		for k, v in pairs(args) do
+			message = message.."["..k.."] - "..v.."\n"
+			local temp = {}
+			temp.answer = v
+			temp.count = 0
 			
-			question = args[1] -- Frage setzen
-			votecount = tonumber(args[2]) -- Anzahl Stimmen setzen
-			table.remove(args,1) -- Frage aus args table löschen
-			table.remove(args,1) -- Stimmen aus args table löschen
-			
-			local message = "["..botName.."] Vote: \n---- "..question.." ----\n"
-			
-			for k, v in pairs(args) do
-				message = message.."["..k.."] - "..v.."\n"
-				local temp = {}
-				temp.answer = v
-				temp.count = 1 --0 ist verboten, sonst tauchen Fehler auf
-				
-				table.insert(answers, temp)
-			end
-			
-			message = message.."Use /vote <index> to vote\nYou have "..votecount.." Votes"
-			
-			send_text(msg.to.print_name, message)
-		else
-			send_text(msg.to.print_name, "["..botName.."] Usage: startvote <question> <votecount> <answ1> <answ2> ...")
+			table.insert(answers, temp)
 		end
+		
+		message = message.."Use /vote <index> to vote\nYou have "..votecount.." Vote"..s(votecount)
+		
+		send(msg.to.print_name, message)
+	else
+		answer(msg, "Usage: startvote <question> <votecount> <answ1> <answ2> ...")
 	end
-end)
+end, 0)
+commands.alias("startvote", "newvote")
 
-addCommand("vote", function(msg, args)
-	if(#args == 1) then
-		
-		local voterid = 1
-		local allowedtoVote = false
-		local voterExist = false
-		for k, v in pairs(voters) do
-			if(voters[k].name == msg.from.print_name) then
-				voterid = k
-				voterExist = true
-				break
+commands.add("vote", function(msg, args)
+	if #args == 1 then
+		local n = tonumber(args[1])
+		if n and n > 0 and n <= #answers then
+			local name = msg.from.print_name
+
+			if not voters[name] then
+				voters[name] = 0
 			end
-		end
-		
-		if voterExist then
-			if voters[voterid].votes < votecount then
-				voters[voterid].votes = voters[voterid].votes + 1
-				allowedtoVote = true
+			
+			if voters[name] < votecount then
+				voters[name] = voters[name] + 1
+				answers[n].count = answers[n].count + 1
+				answer(msg, "Vote saved")
 			else
-				send_text(msg.to.print_name, "You aren't allowed to vote more than "..votecount.." time(s)")
+				answer(msg, "You aren't allowed to vote more than "..votecount.." time"..s(votecount))
 			end
 		else
-			local voter = {}
-			voter.name = msg.from.print_name
-			voter.votes = 1
-			
-			table.insert(voters, voter)
-			allowedtoVote = true
-		end
-		
-		if allowedtoVote then
-			answers[tonumber(args[1])].count = answers[tonumber(args[1])].count + 1
-			
-			--[[local message = "["..botName.."] Vote: \n---- "..question.." ----\n"
-			for k, v in pairs(answers) do
-				message = message.."["..k.."] - "..v.answer.." - "..(v.count - 1).." Votes\n"
-			end
-			
-			send_text(msg.to.print_name, message)--]]
+			answer(msg, "Usage: vote <index>")
 		end
 	else
-		send_text(msg.to.print_name, "["..botName.."] Usage: vote <index>")
+		answer(msg, "Usage: vote <index>")
 	end
 end)
 
-addCommand("showvote", function(msg, args)
-	local message = "["..botName.."] Vote: \n---- "..question.." ----\n"
+commands.add("showvote", function(msg, args)
+	local message = "Vote: \n---- "..question.." ----\n"
 	
 	for k, v in pairs(answers) do
-		message = message.."["..k.."] - "..v.answer.." - "..(v.count - 1).." Vote(s)\n"
+		message = message.."["..k.."] - "..v.answer.." - "..v.count.." Vote"..s(v.count).."\n"
 	end
 	
-	send_text(msg.to.print_name, message)
+	send(msg.to.print_name, message)
 end)

@@ -1,6 +1,12 @@
 --[[ Core module - Docs:
 This module provides the most basic set of functions.
 
+update
+	forces a git reset and then updates
+
+reload
+	reloads the whole bot
+
 ping
 	A very simple function to check if the bot is responding.
 
@@ -22,102 +28,111 @@ about
 	Displays a short message naming the developers
 ]]
 
-addCommand("ping", function(msg, args)
-	send_text(msg.to.print_name, "["..botName.."] Pong!")
+------ Vital chat commands ------
+commands.add("update", function(msg, args)
+	--[[os.capture("cd "..installPath.." && git reset --hard")
+	local text = os.capture("cd "..installPath.." && git pull")
+	if text ~= "Already up-to-date." then
+		local beginPos, endPos, fromVersion, toVersion = string.find(text, "(%w+)%.%.(%w+)") 	-- Get version hashes
+		text = string.sub(text, endPos+15)														-- Remove version hashes from string
+		text = string.gsub(text, "([%+%-]+)%s", "%1\n")											-- Format file changes
+		send(msg.to.print_name, [Update] Updating from <"..fromVersion.."> to <"..toVersion..">\n"..text)
+		postpone(chatCommands.reload, {from={print_name="T-Bot"}}, 1)							-- Safety delay to give the update process some time (needs admin credentials)
+	else
+		answer(msg, [Update] Already up-to-date.")
+	end]]--
+	answer(msg, "[Update] function currently disabled.")
+end, 10)
+
+commands.add("reload", function(msg, args)
+	local func, err = loadfile(defaultFilePath)
+	if func then
+		local success, err = pcall(func)
+		if not success then
+			print("Error running main file:\n"..err)
+		end
+	else
+		print("Error reloading main file:\n"..err)
+	end
+end, 10)
+
+commands.add("ping", function(msg, args)
+	answer(msg, "Pong!")
 end)
 
-addCommand("lua", function(msg, args)
-	if(isAdmin(msg)) then
-		if(#args > 0) then
-			local input = string.sub(msg.text,6)
-			local output = false
-			local file = false
-			local analyzing = true
-			local func
-			local errorStr
-			
-			-- Analyze flags
-			while analyzing do
-				analyzing = false
-				if string.sub(input, 0, 2) == "-x" then
-					input = string.sub(input, 4)
-					output = true
-					analyzing = true -- continue
-				elseif string.sub(input, 0, 2) == "-f" then
-					input = string.sub(input, 4)
-					file = true
-					analyzing = true -- continue
-				elseif string.sub(input, 0, 2) == "-E" then
-					input = "\"Easter-Eggs are cool!\""
-					output = true
-					file = false
-					-- flag replaces command and overrides other flags
-				end
+commands.add("lua", function(msg, args)
+	if #args > 0 then
+		local input = string.sub(msg.text,6)
+		local output = false
+		local file = false
+		local analyzing = true
+		
+		-- Analyze flags
+		while analyzing do
+			analyzing = false
+			if string.sub(input, 0, 2) == "-x" then
+				input = string.sub(input, 4)
+				output = true
+				analyzing = true -- continue
+			elseif string.sub(input, 0, 2) == "-f" then
+				input = string.sub(input, 4)
+				file = true
+				analyzing = true -- continue
+			elseif string.sub(input, 0, 2) == "-E" then
+				input = "\"Easter-Eggs are cool!\""
+				output = true
+				file = false
+				-- flag replaces command and overrides other flags
 			end
-			
-			-- load command / file
-			if file then
-				func, errorStr = loadfile(input) -- 
+		end
+		
+		-- load command / file
+		local func, err
+		if file then
+			func, err = loadfile(input) -- 
+		elseif output then
+			input = "return "..input
+			func, err = loadstring(input) --
+		else
+			func, err = loadstring(input) --
+		end
+		
+		if func then
+			local success, out = safeInvoke(func)
+			if not success then
+				answer(msg, "Lua Error: "..out)
 			elseif output then
-				input = "return "..input
-				func, errorStr = loadstring(input) --
-			else
-				func, errorStr = loadstring(input) --
-			end
-			
-			if(func == nil) then
-				send_text(msg.to.print_name, "["..botName.."] An error occured while running the script:\n"..errorStr)
-			else
-				if output then
-					local output = func()
-					-- make output more user-friendly
-					if output == nil then
-						output = "[nil]"
-					elseif output == "" then
-						output = "[Empty]"
-					elseif output == " " then
-						output = "[Space]"
-					elseif output == true then
-						output = "[TRUE]"
-					elseif output == false then
-						output = "[FALSE]"
-					end
-					send_text(msg.to.print_name, "["..botName.."] "..output)
-				else
-					func()
-				end
+				answer(msg, stringify(out))
 			end
 		else
-			send_text(msg.to.print_name, "["..botName.."] Usage: lua (-x, -f) <cmd/filename>")
+			answer(msg, "Parse Error: "..err)
 		end
+	else
+		answer(msg, "Usage: lua (-x, -f) <cmd/filename>")
 	end
-end)
+end, math.huge)
 
-addCommand("sh", function(msg, args)
-	if(isAdmin(msg)) then
-		if(#args > 0) then
-			local output = tostring(os.capture(string.sub(msg.text,5), true))
-			if(output ~= "") then
-				send_text(msg.to.print_name, output)
-			else
-				send_text(msg.to.print_name, "["..botName.."] [Empty]")
-			end
+commands.add("sh", function(msg, args)
+	if #args > 0 then
+		local output = os.capture(string.sub(msg.text,5), true)
+		if output ~= "" then
+			answer(msg, output)
 		else
-			send_text(msg.to.print_name, "["..botName.."] Usage: sh <shellcmd>")
+			answer(msg, "[Empty]")
 		end
+	else
+		answer(msg, "Usage: sh <shellcmd>")
 	end
+end, math.huge)
+
+commands.add("ls", function(msg, args)
+	answer(msg, "Available commands:\n"..commands.list())
 end)
 
-addCommand("ls", function(msg, args)
-	local cmds = ""
-	for key, value in pairs(chatCommands) do
-		if key ~= "getuser" then
-			cmds = cmds..key.."\n"
-		end
-	end
-	send_text(msg.to.print_name, "["..botName.."] Available commands:\n"..cmds)
+commands.add("about", function (msg, args)
+	answer(msg, "T-Bot is being developed by:\n - Marco von Raumer\n - David Enderlin\n - Marcel Schmutz\n©2014") 
 end)
 
-addCommand("about", function (msg, args)
-	send_text(msg.to.print_name, "["..botName.."] is being developed by:\n - Marco von Raumer\n - David Enderlin\n - Marcel Schmutz\n©2014") 
-end)
+commands.add("error", function(msg, args)
+	error("error")
+end, 0)
